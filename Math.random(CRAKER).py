@@ -8,7 +8,7 @@ import struct
 
 ComputingVar = z3.Solver()
 
-A0, A1 = z3.BitVecs('A00 A01', 64)
+a0, a1 = z3.BitVecs('A00 A01', 64)
 
 Prompt = input("In order to predict a future value of Math.random(), You are gonna be asked to provide five "
                "consecutive float numbers from this function. For next step please press ENTER")
@@ -18,7 +18,7 @@ x2 = float(input("please provide a third float number: "))
 x3 = float(input("please provide a fourth float number: "))
 x4 = float(input("please provide a fifth float number: "))
 
-InputSequence = [
+inputSequence = [
                     x0,
                     x1,
                     x2,
@@ -26,20 +26,20 @@ InputSequence = [
                     x4,
                 ][::-1]
 
-for i in range(len(InputSequence)):
-    State1 = A0
-    State0 = A1
-    A0 = State0
-    State1 ^= State1 << 23
-    State1 ^= z3.LShR(State1, 17)
-    State1 ^= State0
-    State1 ^= z3.LShR(State0, 26)
-    A1 = State1
+for i in range(len(inputSequence)):
+    state1 = a0
+    state0 = a1
+    a0 = state0
+    state1 ^= state1 << 23
+    state1 ^= z3.LShR(state1, 17)
+    state1 ^= state0
+    state1 ^= z3.LShR(state0, 26)
+    a1 = state1
 
-    FL64 = struct.pack('d', InputSequence[i] + 1)
-    Long64 = struct.unpack('<Q', FL64)[0]
-    FiniteMantissis = Long64 & ((1 << 52) - 1)
-    ComputingVar.add(int(FiniteMantissis) == z3.LShR(A0, 12))
+    FL64 = struct.pack('d', inputSequence[i] + 1)
+    ong64 = struct.unpack('<Q', FL64)[0]
+    FiniteMantissis = ong64 & ((1 << 52) - 1)
+    ComputingVar.add(int(FiniteMantissis) == z3.LShR(a0, 12))
 
 if ComputingVar.check() == z3.sat:
     baseModel = ComputingVar.model()
@@ -48,10 +48,10 @@ if ComputingVar.check() == z3.sat:
     for state in baseModel.decls():
         positions[state.__str__()] = baseModel[state]
 
-    A0 = positions['A00'].as_long()
+    a0 = positions['A00'].as_long()
 
-    Long64 = (A0 >> 12) | 0x3FF0000000000000
-    FL64 = struct.pack('<Q', Long64)
+    ong64 = (a0 >> 12) | 0x3FF0000000000000
+    FL64 = struct.pack('<Q', ong64)
     PredictedSequence = struct.unpack('d', FL64)[0]
     PredictedSequence -= 1
 
