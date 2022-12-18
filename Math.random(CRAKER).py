@@ -52,8 +52,8 @@ if ComputingVar.check() == z3.sat:
 
     ong64 = (a0 >> 12) | 0x3FF0000000000000
     FL64 = struct.pack('<Q', ong64)
-    PredictedSequence = struct.unpack('d', FL64)[0]
-    PredictedSequence -= 1
+    predictedSequence = struct.unpack('d', FL64)[0]
+    predictedSequence -= 1
 
     print("The accuracy of a prediction shall be 100% each time. Thanks to Satisfiability modulo theories. Your next "
-          "future number for Math.random() is: ", PredictedSequence)
+          "future number for Math.random() is: ", predictedSequence)
